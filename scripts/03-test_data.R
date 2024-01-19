@@ -13,3 +13,6 @@ library(tidyverse)
 # [...UPDATE THIS...]
 
 #### Test data ####
+
+# get the data from 00-simulate_data to test
+source("scripts/00-simulate_data.R")

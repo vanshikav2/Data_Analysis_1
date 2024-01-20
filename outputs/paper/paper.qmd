@@ -1,10 +1,9 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "In Depth Analysis of Event Patterns in Crisis Situations"
+subtitle: "City of Toronto Data"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: LINK."
+  - Vanshika Vanshika
+thanks: "Code and data are available at: https://github.com/vanshikav2/Data_Analysis_1."
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
@@ -14,12 +13,27 @@ bibliography: references.bib
 ---
 
 ```{r}
-#| include: false
-#| warning: false
 #| message: false
+#| echo: false
+
+#### Workspace set-up ####
 
 library(tidyverse)
 library(palmerpenguins)
+library(knitr)
+library(kableExtra)
+library(here)
+library(ggplot2)
+library(ggbeeswarm)
+library(ggrepel)
+
+#upload the cleaned_data
+cleaned_data <- read_csv(
+  file = here("outputs/data/analysis_data.csv"),
+  show_col_types = FALSE)
+
+#upload other datasets if needed 
+
 ```
 
 
@@ -40,13 +54,16 @@ Some of our data is of penguins (@fig-bills), from @palmerpenguins.
 #| fig-cap: Bills of penguins
 #| echo: false
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+#ggplot(penguins, aes(x = island, fill = species)) +
+#  geom_bar(alpha = 0.8) +
+#  scale_fill_manual(values = c("darkorange","purple","cyan4"),
+#                    guide = "none") +
+#  theme_minimal() +
+#  facet_wrap(~species, ncol = 1) +
+#  coord_flip()
+ggplot(cleaned_data, aes(x = event_type, fill = factor(hood_158_loc))) +
+  geom_bar(position = "stack", width = 0.8) +
+  labs(title = "Event Type Based on Hood_158", x = "Event Type", y = "Frequency", fill = "Hood_158")
 ```
 
 Talk more about it.

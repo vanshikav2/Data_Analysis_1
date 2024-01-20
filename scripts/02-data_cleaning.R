@@ -12,32 +12,26 @@ library(tidyverse)
 #### Clean data ####
 raw_data <- read_csv("inputs/data/raw_data.csv")
 
+# cleans the data to include event_dow, type, if apprehension was made and their
+# hood_158 number
+
+raw_data
 cleaned_data <-
   raw_data |>
   janitor::clean_names() |>
-  select(wing_width_mm, wing_length_mm, flying_time_sec_first_timer) |>
-  filter(wing_width_mm != "caw") |>
-  mutate(
-    flying_time_sec_first_timer = if_else(flying_time_sec_first_timer == "1,35",
-                                   "1.35",
-                                   flying_time_sec_first_timer)
-  ) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "490",
-                                 "49",
-                                 wing_width_mm)) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "6",
-                                 "60",
-                                 wing_width_mm)) |>
-  mutate(
-    wing_width_mm = as.numeric(wing_width_mm),
-    wing_length_mm = as.numeric(wing_length_mm),
-    flying_time_sec_first_timer = as.numeric(flying_time_sec_first_timer)
-  ) |>
-  rename(flying_time = flying_time_sec_first_timer,
-         width = wing_width_mm,
-         length = wing_length_mm
+  select(objectid, event_dow, event_type, apprehension_made, hood_158) |>
+  filter(hood_158 != "NSA") |>
+  rename(hood_158_loc = hood_158
          ) |> 
+  tidyr::drop_na()
+
+# create another cleaned dataset that contains all the dates and event type 
+cleaned_dated_data <-
+  raw_data |>
+  janitor::clean_names() |>
+  select(objectid, event_year, event_month, event_dow, event_type) |>
   tidyr::drop_na()
 
 #### Save data ####
 write_csv(cleaned_data, "outputs/data/analysis_data.csv")
+write_csv(cleaned_dated_data, "outputs/data/date_analysis_data.csv")

@@ -29,8 +29,7 @@ datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'
 # load the first datastore resource as a sample
 data <- filter(datastore_resources, row_number()==1) %>% get_resource()
 data
-
-
+dim(data)
 
 #### Save data ####
 # change the_raw_data to whatever name you assigned when you downloaded it.

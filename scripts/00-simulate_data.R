@@ -66,6 +66,6 @@ ggplot(simulated_data, aes(x = Event_type, fill = factor(Hood_158))) +
 
 # Visualize event types based on if the apprehension was made
 ggplot(simulated_data, aes(x = Event_type, fill = Apprehension_made)) +
-  geom_bar(position = "dodge") +
+  geom_bar(position = "dodge", fill = 'red') +
   labs(title = "Event Types Based on Apprehension Made", x = "Event Type", y = "Frequency", fill = "Apprehension Made")
 

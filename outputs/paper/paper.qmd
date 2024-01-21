@@ -29,127 +29,171 @@ library(ggrepel)
 
 #upload the cleaned_data
 cleaned_data <- read_csv(
-  file = here("outputs/data/analysis_data.csv"),
+  file = here("outputs/data/analysis_data_full.csv"),
   show_col_types = FALSE)
 
-#upload other datasets if needed 
+cleaned_data_hood <- read_csv(
+  file = here("outputs/data/analysis_data_hood158.csv"),
+  show_col_types = FALSE)
+
+cleaned_data_suicide <- read_csv(
+  file = here("outputs/data/suicide_data.csv"),
+  show_col_types = FALSE)
 
 ```
 
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. 
+Toronto's Person In Crisis lines are an invaluable community asset that provides free, anonymous assistance to people experiencing a serious crisis. The frequency of crisis situations in today’s cities, particularly those involving populations at risk (PICs), highlights the need to better understand the dynamics behind such incidents. Over the years, the situation has drastically changed. As stated by Beverly Romeo-Beehler, Before the COVID-19 pandemic hit in 2018 and 2019, the call centre handled over 1.9 million service calls a year, with slightly under 60% of those calls coming from emergency 9-1-1 lines. This is quite a large number of calls being received. He further adds that calls for service fell to 1.7 million in 2020 and then slightly increased to 1.8 million in 2021. During the pandemic in 2020 and 2021, slightly more than 60% of emergency 9-1-1 calls were placed. The call centre received over 5,000 calls a day on average between 2018 and 2021, with nearly 3,000 of those calls being 9-1-1 calls. 
+
+
+The Toronto Police Service is in charge of the system, which is built to handle several kinds of crisis calls, each of which calls for a unique reaction. A variety of event types, including attempt suicide, person in crisis, elopee, jumper, overdose, and threatened suicide, are included in the dataset.The geographical location of the calls according to Toronto's hood_158 system has also been recorded in the year 2014,2015. In this paper, all the neighborhood (Hood_158) data is used as an estimand to get a better understanding of all the hotspots of the PIC calls in Toronto neighborhood. In order to identify significant patterns and trends within the Persons in Crisis calls for help attended dataset, several examination of the interactions between type of events, geographical locations, month, day of the week & time of the day and event-specific aspect are used. The focus of this paper is to draw correlation between suicide related event and time of the day or day of the week.The analysis between suicide related events, their frequency and the geographical area of PIC call shows a definitive trend among these factors. The analysis aims to provide insightful information that will improve crisis response system and promote community well-being.
+
+
+In this data section, various aspects of dataset comparisons are analyzed, and the process of data cleaning used to derive those datasets is discussed. The results section of the paper presents all the results derived from different comparisons and datasets, and their analysis, trends, and understandings are discussed in the discussion section. Lastly, the conclusion section concludes the paper and provides final insights. Cross-referencing sections and sub-sections is implemented for coherence and clarity.
 
 The remainder of this paper is structured as follows. @sec-data....
 
 
 
 # Data {#sec-data}
+The data used in this paper is derived from the City of Toronto's opendatatoronto Portal(). The dataset is titled 'Persons in Crisis Calls for Service Attended'. Data was cleaned and analyzed using the statistical programming software R [@r], and using other libraries such as `tidyverse` [@rTidyverse], `ggplot2` [@rGgplot2], `dplyr` [@rDplyr], `readr` [@rReadr], `tibble` [@rTibble], `janitor` [@rJanitor], `KableExtra` [@rKableExtra], `knitr` [@rknitr], `ggbeeswarm` [@rggbeeswarm], `ggrepel` [@rggrepel], and `here` [@rHere]. Later in this paper, there will be a more thorough explanation of the procedures involved in collecting, cleaning, and analyzing data.
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+#Some of our data is of penguins (@fig-bills), from @palmerpenguins.
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
+#| label: fig-events
+#| fig-cap: Types of Call Events
 #| echo: false
 
-#ggplot(penguins, aes(x = island, fill = species)) +
-#  geom_bar(alpha = 0.8) +
-#  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-#                    guide = "none") +
-#  theme_minimal() +
-#  facet_wrap(~species, ncol = 1) +
-#  coord_flip()
-ggplot(cleaned_data, aes(x = event_type, fill = factor(hood_158_loc))) +
-  geom_bar(position = "stack", width = 0.8) +
-  labs(title = "Event Type Based on Hood_158", x = "Event Type", y = "Frequency", fill = "Hood_158")
+# graph displays frequency of all the different type of events
+ ggplot(cleaned_data, aes(x = event_type)) +
+ geom_bar(fill = "pink") +
+ labs(title = "Event Types and Their Frequencies", x = "Event Type", y =      "Frequency", color = "Country") +
+ scale_color_brewer(palette = "Set1") +
+ theme(legend.position = "bottom")
+
+rows <- nrow(cleaned_data)
+rows
 ```
 
-Talk more about it.
+### Person In Crisis for Calls Attended
 
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+This dataset is collected and provided by the Toronto Police Service and the dataset was last updated January 11, 2024 as of January 21, 2024. It includes data from year 2014 to 2024. This dataset included event_id, the time,day,month, year of the call, the type of event that occured, if an apprehension after call was made, police division of event, whether an Occurrence was created or not. For the year 2014 and 2015, it also included the calls old and new name of neighbourhood, according to Hood_158 and Hood_140 system, which was left NSA after in order to protect the privacy of the parties.
+Upon collection of the data, it was cleaned in several different ways to analyse the data fully. The columns of neighbourhood addresses were removed, including division and event id. Please see @tbl-Full_data for the sample of this dataset
+```{r}
+#| message: false
+#| echo: false
+#| label: tbl-Full_data
+#| tbl-cap: Sample of Cleaned Person In Crisis for Calls Attended Data
+head(cleaned_data, 5) |>
+  kable(
+    col.names = c("Id","Event Year", "Event Month", "Event DOW", "Event Hour", "Event Type", "Apprehension made"),
+      booktabs = TRUE
+  )
+```
+### Hood_158 and Type of Event 
+Moreover, using the same data from Toronto Police Service, it was cleaned differently by deleting all the years after 2015 with no location, time,month,day of the evnt and adding hood_158 column of the data to show the geographical location of the calls in early years. A sample of this dataset can be viewed by @tbl-Hood
 
 ```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
+#| message: false
+#| echo: false
+#| label: tbl-Hood
+#| tbl-cap: Sample of Cleaned Person In Crisis With Hood_158 data 
+head(cleaned_data_hood, 5) |>
+  kable(
+    col.names = c("Id", "Event Type", "Hood_158 Number"),
+      booktabs = TRUE
+  )
+```
+
+
+```{r}
+#| label: fig-hood
+#| fig-cap: Relationship between suicide rate and the neighbourhood
 #| echo: false
 #| warning: false
 #| message: false
+cleaned_data_hood <- read_csv(
+  file = here("outputs/data/analysis_data_hood158.csv"),
+  show_col_types = FALSE)
 
-analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
+ggplot(cleaned_data_suicide, aes(x = factor(hood_158), fill = event_type)) +
+  geom_bar(position = "dodge", stat = "count") +
+  labs(title = "Event Type by Hood 158", x = "Hood 158", y = "Count") +
   theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
+  theme(legend.position = "top",        # Change legend position
+        legend.title = element_blank()) +
+theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1, size = 10))
+
+category_freq <- table(cleaned_data_suicide$hood_158)
+
+# Find the value with the highest frequency (mode)
+sorted_values <- names(sort(category_freq, decreasing = TRUE))
+most_common_value <- sorted_values[1]
+second_most_common_value <- sorted_values[2]
+
+most_common_value
+second_most_common_value
+
+total <- sum(cleaned_data_suicide$hood_158 == "73")
+total
+unique_values_count <- length(unique(cleaned_data_suicide$hood_158))
+print(paste("Number of unique values in the 'Category' column:", unique_values_count))
 ```
 
 Talk way more about it. 
 
 
 
-# Model
-
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
-
-## Model set-up
-
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
-
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
-
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
-
-### Model justification
-
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
-
 # Results
 
-Our results are summarized in @tbl-modelresults.
+### Type of Events ###
+From the years 2014 to 2023, Toronto has the highest number of PIC calls for the Person In crisis event which consists of all the different of type of crisis like elopee, jumper, and much more. The second highest category is suicide related which includes both suicide and suicide attempted and is a total of 91501 calls. The last category is Overdose.The total number of calls recorded in this dataset is 291991. The results can be seen @fig-events.
+
+### Neighbourhood and Suicide PIC Calls ###
+@fig-hood shows the relationship between neignbourhood and suicide PIC calls. There are around 174 neighbourhoods divided in Hood_158 system and the graph shows around 158 neighbourhoods have reported a PIC call for suicide-related events. The most number of calls were received from Hood 170 which were about 1022 suicide related calls and second most calls from recieved from the area Hood_73 which were around 858 calls. The Hood_170 is Yonge-Bay
+Corridor area and Hood_73 is Moss Park area in Old City of Toronto.(Toronto neigbourhoods #https://www.toronto.ca/city-government/data-research-maps/neighbourhoods-communities/neighbourhood-profiles/about-toronto-neighbourhoods/)
+
+### Suicides and Apprehension made ###
+
 
 ```{r}
+#| label: fig-planes2
 #| echo: false
 #| eval: true
 #| warning: false
 #| message: false
 
 library(rstanarm)
+library(patchwork)
+day_colors <- c("Sunday" = "red", "Monday" = "green", "Tuesday" = "blue", "Wednesday" = "purple",
+                "Thursday" = "orange", "Friday" = "brown", "Saturday" = "pink")
+# Create ggplot objects for days and time
+days <- cleaned_data %>%
+  ggplot(aes(x = fct_infreq(event_dow), fill = fct_infreq(event_dow))) +
+  geom_bar(position = "stack", show.legend = FALSE) +
+  labs(x = "Day of Week", y = "Frequency", fill = "Day of Week") +
+  scale_fill_manual(values = day_colors) +
+  theme_minimal()
 
-first_model <-
-  readRDS(file = here::here("outputs/models/first_model.rds"))
-```
+time <- cleaned_data %>%
+  mutate(Time=as.POSIXct(event_hour, format="%H")) %>%
+  ggplot(aes(Time, fill=fct_infreq(event_dow))) +
+  geom_density(adjust=0.5, position="stack") + # Stack the KDE of each day on top of each other
+  labs(x = "Time of Day", y = "Density", fill="Day of Week") +
+  scale_x_datetime(date_labels="%H", breaks="4 hour") +
+  scale_fill_manual(values=day_colors) +
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(-5,-5,-5,-5),
+        axis.text.x=element_text(size=8)) +
+  ggtitle("Delays Spike Several Times Throughout the Day")
 
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
+# Plot the two graphs on top of each other with a space in between
+(days / plot_spacer() / time +
+    plot_layout(heights = c(10, 1, 6), guides="collect"))
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
 ```
 
 
@@ -196,15 +240,15 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
+#pp_check(first_model) +
+#  theme_classic() +
+#  theme(legend.position = "bottom")
 
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
+#posterior_vs_prior(first_model) +
+#  theme_minimal() +
+ # scale_color_brewer(palette = "Set1") +
+ # theme(legend.position = "bottom") +
+ # coord_flip()
 ```
 
 ## Diagnostics
@@ -223,9 +267,9 @@ posterior_vs_prior(first_model) +
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(first_model, "trace")
+#plot(first_model, "trace")
 
-plot(first_model, "rhat")
+#plot(first_model, "rhat")
 ```
 
 

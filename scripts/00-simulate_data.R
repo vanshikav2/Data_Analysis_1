@@ -49,6 +49,7 @@ ggplot(simulated_data, aes(x = Event_type)) +
 scale_color_brewer(palette = "Set1") +
   theme(legend.position = "bottom")
 
+
 # Visualize event types based on neighborhoods
 #ggplot(simulated_data, aes(x = Event_type, fill = NEIGHBOURHOOD)) +
 #  geom_bar(position = "dodge") +

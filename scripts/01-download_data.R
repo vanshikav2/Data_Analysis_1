@@ -19,15 +19,15 @@ library(readr)
 # get package
 package <- show_package("persons-in-crisis-calls-for-service-attended")
 package
-
+dim(package)
 # get all resources for this package
 resources <- list_package_resources("persons-in-crisis-calls-for-service-attended")
-
+resources
 # identify datastore resources; by default, Toronto Open Data sets datastore resource format to CSV for non-geospatial and GeoJSON for geospatial resources
 datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
 
 # load the first datastore resource as a sample
-data <- filter(datastore_resources, row_number()==1) %>% get_resource()
+data <- filter(datastore_resources, row_number()==2) %>% get_resource()
 data
 dim(data)
 

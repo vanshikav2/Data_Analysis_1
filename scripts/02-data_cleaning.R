@@ -55,6 +55,13 @@ event_suicide_data <-
   filter(event_type == "Suicide-related" & hood_158 != "NSA") |>
   tidyr::drop_na()
 
+event_suicide_data2 <-
+raw_data |>
+  janitor::clean_names() |>
+  select(objectid, event_month, event_dow, event_hour, event_type) |>
+  filter(event_type == "Suicide-related") |>
+  tidyr::drop_na()
+print(event_suicide_data2)
 
 #### Save data ####
 write_csv(cleaned_data_1, "outputs/data/analysis_data_hood158.csv")
@@ -62,3 +69,5 @@ write_csv(cleaned_data_2, "outputs/data/analysis_data_2014.csv")
 write_csv(cleaned_data_3, "outputs/data/analysis_data_2023.csv")
 write_csv(cleaned_data_4, "outputs/data/analysis_data_full.csv")
 write_csv(event_suicide_data, "outputs/data/suicide_data.csv")
+write_csv(event_suicide_data2, "outputs/data/suicide_data1.csv")
+

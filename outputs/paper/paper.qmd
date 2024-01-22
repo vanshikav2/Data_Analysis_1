@@ -19,7 +19,6 @@ bibliography: references.bib
 #### Workspace set-up ####
 
 library(tidyverse)
-library(palmerpenguins)
 library(knitr)
 library(kableExtra)
 library(here)
@@ -40,12 +39,16 @@ cleaned_data_suicide <- read_csv(
   file = here("outputs/data/suicide_data.csv"),
   show_col_types = FALSE)
 
+cleaned_data_suicide1 <- read_csv(
+  file = here("outputs/data/suicide_data1.csv"),
+  show_col_types = FALSE)
+
 ```
 
 
 # Introduction
 
-Toronto's Person In Crisis lines are an invaluable community asset that provides free, anonymous assistance to people experiencing a serious crisis. The frequency of crisis situations in today’s cities, particularly those involving populations at risk (PICs), highlights the need to better understand the dynamics behind such incidents. Over the years, the situation has drastically changed. As stated by Beverly Romeo-Beehler, Before the COVID-19 pandemic hit in 2018 and 2019, the call centre handled over 1.9 million service calls a year, with slightly under 60% of those calls coming from emergency 9-1-1 lines. This is quite a large number of calls being received. He further adds that calls for service fell to 1.7 million in 2020 and then slightly increased to 1.8 million in 2021. During the pandemic in 2020 and 2021, slightly more than 60% of emergency 9-1-1 calls were placed. The call centre received over 5,000 calls a day on average between 2018 and 2021, with nearly 3,000 of those calls being 9-1-1 calls. 
+Toronto's Person In Crisis lines are an invaluable community asset that provides free, anonymous assistance to people experiencing a serious crisis. The frequency of crisis situations in today’s cities, particularly those involving populations at risk (PICs), highlights the need to better understand the dynamics behind such incidents. Over the years, the situation has drastically changed. As stated by Beverly Romeo-Beehler [@resource1], Before the COVID-19 pandemic hit in 2018 and 2019, the call centre handled over 1.9 million service calls a year, with slightly under 60% of those calls coming from emergency 9-1-1 lines. This is quite a large number of calls being received. He further adds that calls for service fell to 1.7 million in 2020 and then slightly increased to 1.8 million in 2021. During the pandemic in 2020 and 2021, slightly more than 60% of emergency 9-1-1 calls were placed. The call centre received over 5,000 calls a day on average between 2018 and 2021, with nearly 3,000 of those calls being 9-1-1 calls. 
 
 
 The Toronto Police Service is in charge of the system, which is built to handle several kinds of crisis calls, each of which calls for a unique reaction. A variety of event types, including attempt suicide, person in crisis, elopee, jumper, overdose, and threatened suicide, are included in the dataset.The geographical location of the calls according to Toronto's hood_158 system has also been recorded in the year 2014,2015. In this paper, all the neighborhood (Hood_158) data is used as an estimand to get a better understanding of all the hotspots of the PIC calls in Toronto neighborhood. In order to identify significant patterns and trends within the Persons in Crisis calls for help attended dataset, several examination of the interactions between type of events, geographical locations, month, day of the week & time of the day and event-specific aspect are used. The focus of this paper is to draw correlation between suicide related event and time of the day or day of the week.The analysis between suicide related events, their frequency and the geographical area of PIC call shows a definitive trend among these factors. The analysis aims to provide insightful information that will improve crisis response system and promote community well-being.
@@ -58,9 +61,7 @@ The remainder of this paper is structured as follows. @sec-data....
 
 
 # Data {#sec-data}
-The data used in this paper is derived from the City of Toronto's opendatatoronto Portal(). The dataset is titled 'Persons in Crisis Calls for Service Attended'. Data was cleaned and analyzed using the statistical programming software R [@r], and using other libraries such as `tidyverse` [@rTidyverse], `ggplot2` [@rGgplot2], `dplyr` [@rDplyr], `readr` [@rReadr], `tibble` [@rTibble], `janitor` [@rJanitor], `KableExtra` [@rKableExtra], `knitr` [@rknitr], `ggbeeswarm` [@rggbeeswarm], `ggrepel` [@rggrepel], and `here` [@rHere]. Later in this paper, there will be a more thorough explanation of the procedures involved in collecting, cleaning, and analyzing data.
-
-#Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+The data used in this paper is derived from the City of Toronto's opendatatoronto Portal [@torontodata]. The dataset is titled 'Persons in Crisis Calls for Service Attended'. Data was cleaned and analyzed using the statistical programming software R [@citeR], and using other libraries such as `tidyverse` [@tidy], `ggplot2` [@ggplot], `dplyr` [@dp], `readr` [@read], `tibble` [@tib], `janitor` [@jan],`reshape2`` [@reshape], `knitr` [@knit], `ggbeeswarm` [@gg], `ggrepel` [@repel], and `here` [@here]. Later in this paper, there will be a more thorough explanation of the procedures involved in collecting, cleaning, and analyzing data.
 
 ```{r}
 #| label: fig-events
@@ -73,9 +74,6 @@ The data used in this paper is derived from the City of Toronto's opendatatoront
  labs(title = "Event Types and Their Frequencies", x = "Event Type", y =      "Frequency", color = "Country") +
  scale_color_brewer(palette = "Set1") +
  theme(legend.position = "bottom")
-
-rows <- nrow(cleaned_data)
-rows
 ```
 
 ### Person In Crisis for Calls Attended
@@ -87,6 +85,8 @@ Upon collection of the data, it was cleaned in several different ways to analyse
 #| echo: false
 #| label: tbl-Full_data
 #| tbl-cap: Sample of Cleaned Person In Crisis for Calls Attended Data
+
+# creates a table of the cleaned sample data set
 head(cleaned_data, 5) |>
   kable(
     col.names = c("Id","Event Year", "Event Month", "Event DOW", "Event Hour", "Event Type", "Apprehension made"),
@@ -94,13 +94,15 @@ head(cleaned_data, 5) |>
   )
 ```
 ### Hood_158 and Type of Event 
-Moreover, using the same data from Toronto Police Service, it was cleaned differently by deleting all the years after 2015 with no location, time,month,day of the evnt and adding hood_158 column of the data to show the geographical location of the calls in early years. A sample of this dataset can be viewed by @tbl-Hood
+Moreover, using the same data from Toronto Police Service, it was cleaned differently by deleting all the years after 2015 with no location, time,month,day of the event and adding hood_158 column of the data to show the geographical location of the calls in early years. A sample of this data set can be viewed by @tbl-Hood
 
 ```{r}
 #| message: false
 #| echo: false
 #| label: tbl-Hood
 #| tbl-cap: Sample of Cleaned Person In Crisis With Hood_158 data 
+
+# creates a data set of the cleaned data set of the neighbourhoods
 head(cleaned_data_hood, 5) |>
   kable(
     col.names = c("Id", "Event Type", "Hood_158 Number"),
@@ -115,37 +117,21 @@ head(cleaned_data_hood, 5) |>
 #| echo: false
 #| warning: false
 #| message: false
+
+# reads a different csv file
 cleaned_data_hood <- read_csv(
   file = here("outputs/data/analysis_data_hood158.csv"),
   show_col_types = FALSE)
 
+# makes a plot of all the frequency of the suicide related calls in each neighbourhood
 ggplot(cleaned_data_suicide, aes(x = factor(hood_158), fill = event_type)) +
   geom_bar(position = "dodge", stat = "count") +
   labs(title = "Event Type by Hood 158", x = "Hood 158", y = "Count") +
   theme_minimal() +
   theme(legend.position = "top",        # Change legend position
         legend.title = element_blank()) +
-theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1, size = 10))
-
-category_freq <- table(cleaned_data_suicide$hood_158)
-
-# Find the value with the highest frequency (mode)
-sorted_values <- names(sort(category_freq, decreasing = TRUE))
-most_common_value <- sorted_values[1]
-second_most_common_value <- sorted_values[2]
-
-most_common_value
-second_most_common_value
-
-total <- sum(cleaned_data_suicide$hood_158 == "73")
-total
-unique_values_count <- length(unique(cleaned_data_suicide$hood_158))
-print(paste("Number of unique values in the 'Category' column:", unique_values_count))
+theme(axis.text.x=element_text(size=0)) # to not show the x-axis as too many numbers
 ```
-
-Talk way more about it. 
-
-
 
 # Results
 
@@ -154,21 +140,18 @@ From the years 2014 to 2023, Toronto has the highest number of PIC calls for the
 
 ### Neighbourhood and Suicide PIC Calls ###
 @fig-hood shows the relationship between neighborhood and suicide PIC calls. There are around 174 neighborhoods divided in Hood_158 system and the graph shows around 158 neighborhoods have reported a PIC call for suicide-related events. The most number of calls were received from Hood 170 which were about 1022 suicide related calls and second most calls from received from the area Hood_73 which were around 858 calls. The Hood_170 is Yonge-Bay
-Corridor area and Hood_73 is Moss Park area in Old City of Toronto.(Toronto neighborhoods #https://www.toronto.ca/city-government/data-research-maps/neighbourhoods-communities/neighbourhood-profiles/about-toronto-neighbourhoods/)
+Corridor area and Hood_73 is Moss Park area in Old City of Toronto[@resource2].
 
 ### Suicide calls for different days and time of the day ###
-The graph shows the time of the day that was most frequent for the suicide calls and day of the week that most people called for suicide PIC help. 
+The graph shows the time of the day that was most frequent for the suicide calls and day of the week that most people called for suicide PIC help.This is shown in [@Fig-days_and_time]
 ```{r}
-#| label: fig-planes2
+#| label: fig-days_and_time
 #| echo: false
 #| eval: true
 #| warning: false
 #| message: false
+#| fig-cap: Frequency of Calls for Day and Time
 
-
-
-library(rstanarm)
-library(patchwork)
 day_colors <- c("Sunday" = "red", "Monday" = "green", "Tuesday" = "blue", "Wednesday" = "purple",
                 "Thursday" = "orange", "Friday" = "brown", "Saturday" = "pink")
 # Create ggplot objects for days and time
@@ -191,83 +174,70 @@ time
 ```
 
 
-
-
 # Discussion
 
-## First discussion point {#sec-first-point}
+Upon thorough examination of the dataset, several significant findings emerge. Overall, suicide PIC calls show a very important and cruicial relationship with the other factors such as time of the day, day of the week, and geographical area. As highlighted in the Canadian Journal of Psychiatry[@resource3], suicide remains a noteworthy cause of death in Toronto, necessitating a nuanced understanding of the factors contributing to suicide and the development of targeted prevention strategies.
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
-
-## Second discussion point
-
-## Third discussion point
-
-## Weaknesses and next steps
-
-Weaknesses and next steps should also be included.
-
-\newpage
-
-\appendix
-
-# Appendix {-}
-
-
-# Additional data details
-
-# Model details {#sec-model-details}
-
-## Posterior predictive check
-
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
-
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+The analysis of PIC calls reveals a persistent concern, as suicide-related calls consistently constitute a substantial portion of all recorded PIC calls over the years. This trend, observed in both 2014 and 2023, emphasizes the ongoing importance of addressing mental health crises within the community. Mapping these calls to specific areas reveals distinct hotspots, with neighborhoods such as Yonge-Bay Corridor (Hood_170) and Moss Park in the Old City of Toronto (Hood_73) reporting a disproportionately high number of suicide-related PIC calls, indicating potential areas for targeted intervention and support. 
 
 ```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
-
-#pp_check(first_model) +
-#  theme_classic() +
-#  theme(legend.position = "bottom")
-
-#posterior_vs_prior(first_model) +
-#  theme_minimal() +
- # scale_color_brewer(palette = "Set1") +
- # theme(legend.position = "bottom") +
- # coord_flip()
-```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
-```{r}
+#| label: fig-correlation
 #| echo: false
 #| eval: true
-#| message: false
 #| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
+#| message: false
+#| fig-cap: Correlation of Suicide with Time of the Day
 
-#plot(first_model, "trace")
+library(reshape2)
 
-#plot(first_model, "rhat")
+# creates a correlation graph between time of the day and Suicide calls
+# code inspiration from https://stackoverflow.com/questions/66652330/error-ggplot-continuous-x-aesthetic-did-you-forget-aesgroup
+cleaned_data_suicide1 |>
+    filter(event_type == "Suicide-related") %>%
+  group_by(event_hour) %>% # calculating by hours
+  summarise(suicide_frequency = n()) %>% # to get the frequency of the suicide calls
+  ggplot(aes(x = factor(event_hour), y = suicide_frequency, label = "Calls")) + geom_point() + 
+  ggrepel::geom_text_repel() + 
+labs(
+    title = "Frequency of PIC Calls By The Hour",
+    x = "Hour of the Day",
+    y = "Frequency of Calls"
+  ) +
+  theme_classic()
+
+table_data <- table(cleaned_data_suicide1$event_dow, cleaned_data_suicide1$event_hour)
+
+# Convert the table to a data frame
+#df <- as.data.frame.matrix(table_data)
+
+# Reorder days of the week
+#df$Day <- factor(row.names(df), levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+# Melt the data for ggplot
+#melted_df <- melt(df, id.vars = "Day")
+
+# Create a heatmap
+#ggplot(melted_df, aes(x = variable, y = Day, fill = value)) +
+ # geom_tile() +
+#  scale_fill_gradient(low = "white", high = "darkred") +
+ # labs(title = "Suicide Calls by Day of the Week and Hour of the Day",
+#       x = "Hour of the Day",
+ #      y = "Day of the Week") +
+ # theme_minimal()
+
 ```
 
+There is also a clear a correlation between the time of the day and day of the week with the frequency of suicide-related PIC calls like [@fig-correlation]. Thursday is the day of the week that receives most of the calls with Sunday being the day that receives the least calls. The hours between 1300 to 1500 receive a high amount of calls compared to the other time of the day which shows a direct relation between the day and time and suicide related calls.
 
+However, it is crucial to acknowledge and discuss the inherent biases and limitations within the dataset. The presence of numerous "NAS" (Not A Statement) assigned rows in the raw data introduces the possibility of errors in the graphs and analyses, potentially diverting the accuracy of the findings. Additionally, the dataset lacks explicit information regarding the reasons for caller apprehension, hindering a direct correlation between apprehension and the nature of events.
 
+Moreover, the 10-year span covered by the dataset introduces potential biases due to changes in data collection techniques and technology over time. The evolving landscape of mental health awareness and reporting practices may influence the comparability of older and more recent data. Furthermore, limitations arise from the cessation of recording neighborhood information after 2015, aimed at safeguarding the privacy of affected individuals. This restriction poses challenges in assessing the situation in 2023 and analyzing whether observed patterns persist or have evolved.
+
+## Conclusion ##
+
+Finally, the examination of Person In Crisis (PIC) calls in Toronto offers insightful information about the dynamics of mental health crises in the community. The dataset, which covers the years 2014 to 2024, shows a steady and noteworthy increase in PIC calls connected to suicide, highlighting the continued need for focused intervention and support. The necessity of nuanced techniques in crisis management is shown by the association between suicide-related incidents and the time of day, day of the week, and geographic location.
+
+Overall, this analysis provides insightful data that will improve Toronto's crisis response system's efficacy. The results underline how crucial it is to continue treating mental health emergencies and lay the groundwork for next initiatives to raise community well-being.
 \newpage
 
 

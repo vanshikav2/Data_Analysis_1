@@ -61,7 +61,7 @@ The remainder of this paper is structured as follows. @sec-data....
 
 
 # Data {#sec-data}
-The data used in this paper is derived from the City of Toronto's opendatatoronto Portal [@torontodata]. The dataset is titled 'Persons in Crisis Calls for Service Attended'. Data was cleaned and analyzed using the statistical programming software R [@citeR], and using other libraries such as `tidyverse` [@tidy], `ggplot2` [@ggplot], `dplyr` [@dp], `readr` [@read], `tibble` [@tib], `janitor` [@jan],`reshape2`` [@reshape], `knitr` [@knit], `ggbeeswarm` [@gg], `ggrepel` [@repel], and `here` [@here]. Later in this paper, there will be a more thorough explanation of the procedures involved in collecting, cleaning, and analyzing data.
+The data used in this paper is derived from the City of Toronto's opendatatoronto Portal [@torontodata]. The dataset is titled 'Persons in Crisis Calls for Service Attended'. Data was cleaned and analyzed using the statistical programming software R [@citeR], and using other libraries such as `tidyverse` [@tidy], `ggplot2` [@ggplot], `dplyr` [@dp], `readr` [@read], `tibble` [@tib], `janitor` [@jan],`reshape2` [@reshape], `knitr` [@knit], `ggbeeswarm` [@gg], `ggrepel` [@repel], and `here` [@here]. Later in this paper, there will be a more thorough explanation of the procedures involved in collecting, cleaning, and analyzing data.
 
 ```{r}
 #| label: fig-events

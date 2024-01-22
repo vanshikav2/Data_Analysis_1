@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://github.com/vanshikav2/Data_Analysis_1."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "Toronto Police Services' 10-year-long dataset on Persons in Crisis Calls for Service Attended was used to conduct an in-depth analysis of the major PIC call event: Suicide and its data characteristics. It is found that there is a direct relation/trend that can be observed between suicide PIC calls and several factors such as the specific time of the day, day of the week, and identifed hotspot geographical location. This is important as it's essential to analyze the patterns of suicide PIC calls to effectively deal with the problem at its root."
 format: pdf
 number-sections: true
 bibliography: references.bib

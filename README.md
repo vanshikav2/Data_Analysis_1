@@ -1,8 +1,7 @@
-# Analysis of the Persons in Crisis Calls for Service Attended
-
+# Analysis of the Persons in Crisis Calls by Toronto Police Services
 ## Overview
 
-This repo contains a indepth analysis of the Toronto Police Services' dataset of Persons in Crisis Calls for Service Attended. The data science workflow is followed as the data is downloaded, cleaned, simulated, and then analyzed. The paper and analysis is made reproducible so that it can be used again by others. 
+This repo contains a in depth analysis of the Toronto Police Services' data set of Persons in Crisis Calls for Service Attended. The data science workflow is followed as the data is downloaded, cleaned, simulated, and then analyzed. The paper and analysis is made reproducible so that it can be used again by others. 
 
 LLM's like ChatGPT have been used for code explanation, new function descriptions, error explanations and fixes. The chat can be found in llm/usage.txt.
 

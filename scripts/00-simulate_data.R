@@ -9,6 +9,7 @@
 #### Workspace setup ####
 library(tidyverse)
 library(opendatatoronto)
+library(ggplot2)
 
 #### Simulate data ####
 set.seed(398)
@@ -17,7 +18,9 @@ set.seed(398)
 # was made or not and the Toronto Hood 158 number the call is associated with
 simulated_data <-tibble(
   "Event_id" = 1:1000,
-  "Event_type" = sample(c("Suicide-related", "Person in Crisis", "Elopee", "Jumper", "Overdose", "Threaten Suicide"), 1000, replace = TRUE),
+  "Event_type" = sample(c("Suicide-related", "Person in Crisis", "Elopee", 
+                          "Jumper", "Overdose", "Threaten Suicide"), 1000, 
+                        replace = TRUE),
   "Apprehension_made" = sample(c("Yes", "No"), 1000, replace = TRUE),
   "Hood_158" = sample(100:200, 1000, replace = TRUE),
 )
@@ -40,12 +43,14 @@ event_freq
 
 ### Visualize data ###
 
-#based on code from: https://tellingstorieswithdata.com/02-drinking_from_a_fire_hose.html #Explore
+#based on code from: 
+# https://tellingstorieswithdata.com/02-drinking_from_a_fire_hose.html #Explore
 
 # Visualize event types and their frequencies
 ggplot(simulated_data, aes(x = Event_type)) +
   geom_bar(fill = "pink") +
-  labs(title = "Event Types and Their Frequencies", x = "Event Type", y = "Frequency", color = "Country") +
+  labs(title = "Event Types and Their Frequencies", x = "Event Type", 
+       y = "Frequency", color = "Country") +
 scale_color_brewer(palette = "Set1") +
   theme(legend.position = "bottom")
 
@@ -53,20 +58,24 @@ scale_color_brewer(palette = "Set1") +
 # Visualize event types based on neighborhoods
 #ggplot(simulated_data, aes(x = Event_type, fill = NEIGHBOURHOOD)) +
 #  geom_bar(position = "dodge") +
-#  labs(title = "Event Types Based on Neighborhoods", x = "Event Type", y = "Frequency", fill = "Neighborhood")
+#  labs(title = "Event Types Based on Neighborhoods", x = "Event Type",
+# y = "Frequency", fill = "Neighborhood")
 
 # Visualize event type based on Hood_158 while using the stack formation
 ggplot(simulated_data, aes(x = Event_type, fill = factor(Hood_158))) +
   geom_bar(position = "stack") +
-  labs(title = "Event Type Based on Hood_158", x = "Event Type", y = "Frequency", fill = "Hood_158")
+  labs(title = "Event Type Based on Hood_158", x = "Event Type", 
+       y = "Frequency", fill = "Hood_158")
 
 # Visualize event type based on Hood_158 while using the dodge formation
 ggplot(simulated_data, aes(x = Event_type, fill = factor(Hood_158))) +
   geom_bar(position = "dodge") +
-  labs(title = "Event Type Based on Hood_158", x = "Event Type", y = "Frequency", fill = "Hood_158")
+  labs(title = "Event Type Based on Hood_158", x = "Event Type", 
+       y = "Frequency", fill = "Hood_158")
 
 # Visualize event types based on if the apprehension was made
 ggplot(simulated_data, aes(x = Event_type, fill = Apprehension_made)) +
   geom_bar(position = "dodge", fill = 'red') +
-  labs(title = "Event Types Based on Apprehension Made", x = "Event Type", y = "Frequency", fill = "Apprehension Made")
+  labs(title = "Event Types Based on Apprehension Made", x = "Event Type", 
+       y = "Frequency", fill = "Apprehension Made")
 

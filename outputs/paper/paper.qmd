@@ -26,6 +26,7 @@ library(here)
 library(ggplot2)
 library(ggbeeswarm)
 library(ggrepel)
+library(reshape2)
 
 #upload the cleaned_data
 cleaned_data <- read_csv(
@@ -49,10 +50,10 @@ cleaned_data_suicide1 <- read_csv(
 
 # Introduction
 
-Toronto's Person In Crisis lines are an invaluable community asset that provides free, anonymous assistance to people experiencing a serious crisis. The frequency of crises in today’s cities, particularly those involving populations at risk (PICs), highlights the need to better understand the dynamics behind such incidents. Over the years, the situation has drastically changed. As stated by Beverly Romeo-Beehler [@resource1], Before the COVID-19 pandemic hit in 2018 and 2019, the call center handled over 1.9 million service calls a year, with slightly under 60% of those calls coming from emergency 9-1-1 lines. This is quite a large number of calls being received. He further adds that calls for service fell to 1.7 million in 2020 and then slightly increased to 1.8 million in 2021. 
+Toronto's Person In Crisis(PIC) lines are an invaluable community asset that provides free, anonymous assistance to people experiencing a serious crisis. The frequency of crises in today’s cities, particularly those involving populations at risk (PICs), highlights the need to better understand the dynamics behind such incidents. Over the years, the situation has drastically changed. As stated by Beverly Romeo-Beehler [@resource1], Before the COVID-19 pandemic hit in 2018 and 2019, the call center handled over 1.9 million service calls a year, with slightly under 60% of those calls coming from emergency 9-1-1 lines. This is quite a large number of calls being received. He further adds that calls for service fell to 1.7 million in 2020 and then slightly increased to 1.8 million in 2021. 
 
 
-The Toronto Police Service is in charge of the system, which is built to handle several kinds of crisis calls, each of which calls for a unique reaction. A variety of event types, including attempt suicide, the person in crisis, elopee, jumper, overdose, and threatened suicide, are included in the data set. The geographical location of the calls according to Toronto's hood_158 system has also been recorded in the year 2014,2015. In this paper, all the neighborhood (Hood_158) data is used as an estimand to get a better understanding of all the hotspots of the PIC calls in the Toronto neighborhood. To identify significant patterns and trends within the Persons in Crisis calls for help attended data set, several examinations of the interactions between type of events, geographical locations, month, day of the week & time of the day, and event-specific aspects are used. The focus of this paper is to draw the correlation between suicide-related events and the time of the day or day of the week. The analysis of suicide-related events, their frequency, and the geographical area of PIC calls shows a definitive trend among these factors. The analysis aims to provide insightful information that will improve the crisis response system and promote community well-being.
+The Toronto Police Service is in charge of the system, which is built to handle several kinds of crisis calls, each of which calls for a unique reaction. A variety of event types, including attempt suicide, the person in crisis, elopee, jumper, overdose, and threatened suicide, are included in the data set. The geographical location of the calls according to Toronto's hood_158 system has also been recorded in the year 2014 and 2015. In this paper, all the neighborhood (Hood_158) data is used as an estimand to get a better understanding of all the hotspots of the PIC calls in the Toronto neighborhood. To identify significant patterns and trends within the Persons in Crisis calls for help attended data set, several examinations of the interactions between type of events, geographical locations, month, day of the week & time of the day, and event-specific aspects are used. The focus of this paper is to draw the correlation between suicide-related events and the time of the day or day of the week. The analysis of suicide-related events, their frequency, and the geographical area of PIC calls shows a definitive trend among these factors. The analysis aims to provide insightful information that will improve the crisis response system and promote community well-being.
 
 
 In this data section, various aspects of data set comparisons are analyzed, and the data-cleaning process used to derive those data sets is discussed. The results section of the paper presents all the results derived from different comparisons and data sets, and their analysis, trends, and understandings are discussed in the discussion section. Lastly, the conclusion section concludes the paper and provides final insights. Cross-referencing sections and sub-sections are implemented for coherence and clarity.
@@ -71,6 +72,7 @@ The data used in this paper is derived from the City of Toronto's opendatatoront
 #| echo: false
 
 # graph displays frequency of all the different type of events
+# More appealing to show through a graph rather than a table, numbers are easier to visualize and put into perspective
  ggplot(cleaned_data, aes(x = event_type)) +
  geom_bar(fill = "pink") +
  labs(title = "Event Types and Their Frequencies", x = "Event Type", y = "Frequency", color = "Country") +
@@ -130,7 +132,7 @@ ggplot(cleaned_data_suicide, aes(x = factor(hood_158), fill = event_type)) +
   geom_bar(position = "dodge", stat = "count") +
   labs(title = "Event Type by Hood 158", x = "Hood 158", y = "Count") +
   theme_minimal() +
-  theme(legend.position = "top",        # Change legend position
+  theme(legend.position = "none",        # Change legend position
         legend.title = element_blank()) +
 theme(axis.text.x=element_text(size=0)) # to not show the x-axis as too many numbers
 ```
@@ -156,21 +158,43 @@ The graph shows the time of the day that was most frequent for the suicide calls
 day_colors <- c("Sunday" = "red", "Monday" = "green", "Tuesday" = "blue", "Wednesday" = "purple",
                 "Thursday" = "orange", "Friday" = "brown", "Saturday" = "pink")
 
+# A heatmap for the data visualization of days and time of PIC suicide calls
+
+# code inspiration from: https://r-graph-gallery.com/215-the-heatmap-function.html 
+
+table_data <- table(cleaned_data_suicide1$event_dow, cleaned_data_suicide1$event_hour)
+df <- as.data.frame.matrix(table_data)
+ # Reorder days of the week
+df$Day <- factor(row.names(df), levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+# Melt the data for ggplot
+melted_df <- melt(df, id.vars = "Day")
+# Create a heatmap
+ggplot(melted_df, aes(x = variable, y = Day, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "darkred") +
+  labs(title = "Suicide Calls by Day of the Week and Hour of the Day",
+       x = "Hour of the Day",
+      y = "Day of the Week") +
+  theme_minimal() + 
+  theme(axis.text.x=element_text(size=6))
+
+
 # Create ggplot objects for days and time
 # code inspiration from: https://github.com/alyssaschleifer/ttc-subway-delay-analysis/blob/main/outputs/paper/Paper.Rmd 
 
-time <- cleaned_data %>%
-  mutate(Time=as.POSIXct(event_hour, format="%H")) %>%
-  ggplot(aes(Time, fill=fct_infreq(event_dow))) +
-  geom_density(adjust=0.5, position="stack") +
-  labs(x = "Hour", y = "Density", fill= "Day of Week") +
-  scale_x_continuous(breaks = seq(0, 24, by = 2)) +
-  scale_fill_manual(values=day_colors) +
-  theme(axis.text.x=element_text(size=8)) +
-  ggtitle("Frequency of Suicide Calls")
+# This is another example of the map for visualization, run it if you want a better understanding with colors.
 
-time
+#time <- cleaned_data %>%
+#  mutate(Time=as.POSIXct(event_hour, format="%H")) %>%
+#  ggplot(aes(Time, fill=fct_infreq(event_dow))) +
+#  geom_density(adjust=0.5, position="stack") +
+#  labs(x = "Hour", y = "Density", fill= "Day of Week") +
+#  scale_x_continuous(breaks = seq(0, 24, by = 5)) +
+#  scale_fill_manual(values=day_colors) +
+#  theme(axis.text.x=element_text(size=8)) +
+#  ggtitle("Frequency of Suicide Calls")
 
+#time
 
 
 ```
@@ -198,8 +222,7 @@ cleaned_data_suicide1 |>
     filter(event_type == "Suicide-related") %>%
   group_by(event_hour) %>% # calculating by hours
   summarise(suicide_frequency = n()) %>% # to get the frequency of the suicide calls
-  ggplot(aes(x = factor(event_hour), y = suicide_frequency, label = "Calls")) + geom_point() + 
-  ggrepel::geom_text_repel() + 
+  ggplot(aes(x = factor(event_hour), y = suicide_frequency)) + geom_point() + 
 labs(
     title = "Frequency of PIC Calls By The Hour",
     x = "Hour of the Day",
@@ -211,7 +234,7 @@ table_data <- table(cleaned_data_suicide1$event_dow, cleaned_data_suicide1$event
 
 ```
 
-There is also a clear a correlation between the time of the day and day of the week with the frequency of suicide-related PIC calls like [@fig-correlation]. Thursday is the day of the week that receives most of the calls with Sunday being the day that receives the least calls. The hours between 1300 to 1500 receive a high amount of calls compared to the other time of the day which shows a direct relation between the day and time and suicide related calls.
+There is also a clear a correlation between the time of the day and day of the week with the frequency of suicide-related PIC calls like [@fig-correlation]. Thursday is the day of the week that receives most of the calls with Sunday being the day that receives the least calls. The hours between 1500 to 1600 receive a high amount of calls compared to the other time of the day which shows a direct relation between the day and time and suicide related calls.
 
 However, it is crucial to acknowledge and discuss the inherent biases and limitations within the data set. The presence of numerous "NAS" (Not A Statement) assigned rows in the raw data introduces the possibility of errors in the graphs and analyses, potentially diverting the accuracy of the findings. Additionally, the data set lacks explicit information regarding the reasons for caller apprehension, hindering a direct correlation between apprehension and the nature of events.
 
